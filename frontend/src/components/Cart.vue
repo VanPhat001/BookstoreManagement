@@ -33,7 +33,8 @@
                                         <div class="mt-8">
                                             <div class="flow-root">
                                                 <ul role="list" class="-my-6 divide-y divide-gray-200">
-                                                    <li v-for="item in cartItems" :key="item.id" class="flex py-6">
+                                                    <li @click="redirectToBookView(item.bookId)" v-for="item in cartItems"
+                                                        :key="item.id" class="flex py-6 cursor-pointer">
                                                         <div
                                                             class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                                                             <img :src="getBookCover(item.bookId)" alt="book image"
@@ -57,8 +58,9 @@
                                                                 <p class="text-gray-500">Quantity {{ item.quantity }}</p>
 
                                                                 <div class="flex">
-                                                                    <button type="button"
-                                                                        class="font-medium text-indigo-600 hover:text-indigo-500">Remove</button>
+                                                                    <div
+                                                                        @click.stop="removeShoppingCartItem(item.bookId)"
+                                                                        class="font-medium text-indigo-600 hover:text-indigo-500">Remove</div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -76,8 +78,8 @@
                                         <p class="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.
                                         </p>
                                         <div class="mt-6">
-                                            <a href="#"
-                                                class="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700">Checkout</a>
+                                            <button @click="redirectToOrderSummaryView"
+                                                class="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700">Checkout</button>
                                         </div>
                                         <div class="mt-6 flex justify-center text-center text-sm text-gray-500">
                                             <p>
@@ -107,6 +109,7 @@ import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } fro
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 import axiosConfig from '@/axiosConfig'
 import { useAccountSore } from '@/stores/account';
+import router from '@/router';
 
 const emits = defineEmits(['onClose', 'onOpen'])
 const props = defineProps({
@@ -166,5 +169,33 @@ function getBookPrice(bookId) {
     return bookMap.value.get(bookId).price
 }
 
+function redirectToBookView(bookId) {
+    open.value = false
+    router.push({
+        name: 'book', params: {
+            id: bookId
+        }
+    })
+}
 
+function redirectToOrderSummaryView() {
+    open.value = false
+    router.push({ name: 'order-summary' })
+}
+
+function removeShoppingCartItem(bookId) {
+    const cusomterId = accountStore.id
+    // console.log({ bookId, cusomterId })
+
+    axiosConfig().delete(`/cart-item/${cusomterId}/${bookId}`)
+    .then(result => {
+        console.log("cart item has deleted")
+        if (result.data) {
+            cartItems.value = cartItems.value.filter(item => item.bookId != bookId)
+        } else {
+
+        }
+    })
+    .catch(console.log)
+}
 </script>

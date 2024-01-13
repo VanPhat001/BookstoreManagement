@@ -8,6 +8,8 @@
                     <Book :book="book"></Book>
                 </template>
             </div>
+
+            <Pagination class="my-4 mx-auto"></Pagination>
         </div>
     </div>
 </template>
@@ -16,6 +18,7 @@
 <script setup>
 import axiosConfig from '@/axiosConfig';
 import Book from '@/components/Book.vue';
+import Pagination from '@/components/Pagination.vue';
 import { ref } from 'vue';
 
 

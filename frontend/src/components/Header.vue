@@ -1,6 +1,6 @@
 <template>
     <header class="bg-white border-b border-b-gray-600/20" v-if="showHeader">
-        <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
+        <nav class="mx-auto flex max-w-7xl items-center justify-between p-2 lg:px-8" aria-label="Global">
             <div class="flex lg:flex-1">
                 <RouterLink :to="{ name: 'home' }" class="-m-1.5 p-1.5">
                     <span class="sr-only">Your Company</span>
@@ -20,7 +20,8 @@
                         <div class="w-full p-3">
                             <div class="relative">
                                 <Icon icon="ic:round-search" class="absolute text-gray-400 top-5 left-4"></Icon>
-                                <input v-model="searchText" type="text" placeholder="Tìm kiếm sản phẩm..."
+                                <input v-model="searchText" @keypress.enter.prevent="redirectAndUpdateQueryParam" type="text"
+                                    placeholder="Tìm kiếm sản phẩm..."
                                     class="bg-transparent h-14 w-full px-12 rounded-lg focus:outline-none hover:cursor-pointer border"
                                     name="">
                                 <span class="absolute top-4 right-5 border-l pl-4">
@@ -228,11 +229,7 @@ const callsToAction = [
 const mobileMenuOpen = ref(false)
 const searchText = ref('')
 const router = useRouter()
-const debounce = new Debounce(() => {
-    router.push({ name: 'search', query: {
-        text: searchText.value
-    } })
-})
+const debounce = new Debounce(redirectAndUpdateQueryParam)
 
 watch(() => searchText.value, () => {
     debounce.reStart()
@@ -246,5 +243,13 @@ function onLogout() {
         accountStore.clear()
         router.push({ name: 'login' })
     }
+}
+
+function redirectAndUpdateQueryParam() {
+    router.push({
+        name: 'search', query: {
+            text: searchText.value
+        }
+    })
 }
 </script>

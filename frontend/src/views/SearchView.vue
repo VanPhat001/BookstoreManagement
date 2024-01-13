@@ -165,6 +165,8 @@
                                     <Book :book="book"></Book>
                                 </template>
                             </div>
+
+            <Pagination class="my-4 mx-auto"></Pagination>
                         </div>
                     </div>
                 </section>
@@ -181,6 +183,7 @@ import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from
 import { useRoute } from 'vue-router';
 import axiosConfig from '@/axiosConfig';
 import Book from '@/components/Book.vue'
+import Pagination from '@/components/Pagination.vue';
 
 const sortOptions = [
     { name: 'Most Popular', href: '#', current: true },
