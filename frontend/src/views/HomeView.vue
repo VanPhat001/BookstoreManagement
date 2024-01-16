@@ -4,8 +4,8 @@
             <h2 class="text-2xl font-bold tracking-tight text-gray-900">Customers also purchased</h2>
 
             <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-                <template v-for="book in books" :key="book.id" >
-                    <Book :book="book"></Book>
+                <template v-for="(id, index) in bookIds" :key="id" >
+                    <Book :book="bookStore.get(id)"></Book>
                 </template>
             </div>
 
@@ -16,18 +16,21 @@
 
 
 <script setup>
-import axiosConfig from '@/axiosConfig';
-import Book from '@/components/Book.vue';
-import Pagination from '@/components/Pagination.vue';
-import { ref } from 'vue';
+import axiosConfig from '@/axiosConfig'
+import Book from '@/components/Book.vue'
+import Pagination from '@/components/Pagination.vue'
+import { useBookStore } from '@/stores/books'
+import { ref } from 'vue'
 
 
-const books = ref([])
+const bookIds = ref([])
+const bookStore = useBookStore()
 
 axiosConfig().get('/book')
     .then(result => {
-        console.log(result.data)
-        books.value = result.data
+        const _books = result.data
+        bookStore.addMany(_books)
+        bookIds.value = _books.map(book => book.id)
     })
     .catch(console.log)
 </script>

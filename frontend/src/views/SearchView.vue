@@ -243,6 +243,8 @@ const books = ref([])
 
 const searchText = computed(() => route.query.text)
 
+searchBooks(searchText.value)
+
 watch(() => searchText.value, (newVal, oldVal) => {
     // console.log(searchText.value)
     searchBooks(newVal)

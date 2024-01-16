@@ -20,8 +20,8 @@
                         <div class="w-full p-3">
                             <div class="relative">
                                 <Icon icon="ic:round-search" class="absolute text-gray-400 top-5 left-4"></Icon>
-                                <input v-model="searchText" @keypress.enter.prevent="redirectAndUpdateQueryParam" type="text"
-                                    placeholder="Tìm kiếm sản phẩm..."
+                                <input v-model="searchText" @keypress.enter.prevent="redirectAndUpdateQueryParam"
+                                    type="text" placeholder="Tìm kiếm sản phẩm..."
                                     class="bg-transparent h-14 w-full px-12 rounded-lg focus:outline-none hover:cursor-pointer border"
                                     name="">
                                 <span class="absolute top-4 right-5 border-l pl-4">
@@ -83,10 +83,17 @@
                     <button class="mr-2.5">
                         <Icon icon="mdi:bell" height="28" class="text-blue-800"></Icon>
                     </button>
-                    <button class="mr-2.5" @click="openShoppingCart">
+                    <!-- <button class="mr-2.5" @click="openShoppingCart">
                         <Icon icon="f7:cart-fill" height="28" class="text-blue-800"></Icon>
-                    </button>
+                    </button> -->
 
+                    <button type="button" @click="openShoppingCart"
+                        class="relative inline-flex items-center mr-2.5 text-sm font-medium text-center text-white">
+                        <Icon icon="f7:cart-fill" height="28" class="text-blue-800"></Icon>
+                        <div
+                            class="absolute inline-flex items-center justify-center w-6 h-6 text-sx font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 dark:border-gray-900">
+                            {{ totalQuantity }}</div>
+                    </button>
 
                     <Menu as="div" class="relative inline-block text-left">
                         <div>
@@ -128,9 +135,7 @@
                             </MenuItems>
                         </transition>
                     </Menu>
-
-
-
+                    
                 </div>
                 <RouterLink v-else :to="{ name: 'login' }" class="text-sm font-semibold leading-6 text-gray-900">Log in
                     <span aria-hidden="true">&rarr;</span>
@@ -192,8 +197,8 @@
 </template>
   
 <script setup>
-import { computed, inject, onMounted, ref, watch } from 'vue'
-import { Dialog, DialogPanel, Disclosure, DisclosureButton, DisclosurePanel, Popover, PopoverButton, PopoverGroup, PopoverPanel } from '@headlessui/vue'
+import { computed, inject, ref, watch } from 'vue'
+import { Dialog, DialogPanel, Disclosure, DisclosureButton, DisclosurePanel, PopoverGroup } from '@headlessui/vue'
 import { ArrowPathIcon, Bars3Icon, ChartPieIcon, CursorArrowRaysIcon, FingerPrintIcon, SquaresPlusIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import { ChevronDownIcon, PhoneIcon, PlayCircleIcon } from '@heroicons/vue/20/solid'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
@@ -203,7 +208,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useAccountSore } from '@/stores/account';
 import Avatar from './Avatar.vue';
 import Debounce from '@/Debounce'
-import axiosConfig from '@/axiosConfig'
+import { useCartStore } from '@/stores/carts'
 
 
 const openShoppingCart = inject('openShoppingCart')
@@ -229,7 +234,12 @@ const callsToAction = [
 const mobileMenuOpen = ref(false)
 const searchText = ref('')
 const router = useRouter()
+const cartStore = useCartStore()
 const debounce = new Debounce(redirectAndUpdateQueryParam)
+
+const totalQuantity = computed(() => {
+    return [...cartStore.cartMap.values()].reduce((s, cart) => s + cart.quantity ,0)
+})
 
 watch(() => searchText.value, () => {
     debounce.reStart()

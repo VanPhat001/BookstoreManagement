@@ -43,8 +43,8 @@
                                 d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
                                 clipRule="evenodd" />
                         </svg>
-                        <input class="pl-2 w-full outline-none border-none" type="password" name="password" id="password"
-                            placeholder="Password" v-model="password" />
+                        <input ref="passwordEl" class="pl-2 w-full outline-none border-none" type="password" name="password"
+                            id="password" placeholder="Password" v-model="password" />
 
                     </div>
 
@@ -57,7 +57,8 @@
                             Password ?</span>
 
                         <RouterLink :to="{ name: 'register' }"
-                            class="text-sm ml-2 hover:text-blue-500 cursor-pointer hover:-translate-y-1 duration-500 transition-all">Don't
+                            class="text-sm ml-2 hover:text-blue-500 cursor-pointer hover:-translate-y-1 duration-500 transition-all">
+                            Don't
                             have an account yet?</RouterLink>
                     </div>
 
@@ -125,11 +126,18 @@ import axiosConfig from '@/axiosConfig'
 import { useRouter } from 'vue-router';
 
 const router = useRouter()
+const passwordEl = ref(null)
 const username = ref('customer1')
 const password = ref('1234')
 
+function resetPassword() {
+    password.value = ''
+    passwordEl.value?.focus()
+}
+
 function onLogin() {
     // console.log(username.value, password.value)
+    console.log("login")
     axiosConfig().post('/customer/find', {
         username: username.value,
         password: password.value
@@ -140,9 +148,14 @@ function onLogin() {
                 localStorage.setItem('accountId', account.id)
                 // router.push({ name: 'home' })
                 window.location.href = '/'
+            } else {
+                alert("Tài khoản hoặc mật khẩu không hợp lệ!")
             }
         })
         .catch(console.log)
+        .finally(() => {
+            resetPassword()
+        })
 
 }
 </script>

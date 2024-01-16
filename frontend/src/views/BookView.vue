@@ -72,7 +72,7 @@
                         </div>
                     </div> -->
 
-                    <form class="mt-10">
+                    <form class="mt-10" @submit.prevent="">
                         <!-- Colors -->
                         <!-- <div>
                             <h3 class="text-sm font-medium text-gray-900">Color</h3>
@@ -126,7 +126,7 @@
                         </div> -->
 
 
-                        <button type="submit"
+                        <button @click="addToBag"
                             class="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Add
                             to bag</button>
                     </form>
@@ -173,6 +173,9 @@ import { StarIcon } from '@heroicons/vue/20/solid'
 import { RadioGroup, RadioGroupLabel, RadioGroupOption } from '@headlessui/vue'
 import axiosConfig from '@/axiosConfig'
 import { useRoute } from 'vue-router';
+import { useBookStore } from '@/stores/books';
+import { useAccountSore } from '@/stores/account';
+import { useCartStore } from '@/stores/carts';
 
 const product = {
     name: 'Basic Tee 6-Pack',
@@ -228,14 +231,56 @@ const product = {
 }
 
 const route = useRoute()
-const id = computed(() => route.params.id) 
+const id = computed(() => route.params.id * 1)
 const book = ref(null)
+const bookStore = useBookStore()
+const accountStore = useAccountSore()
+const cartStore = useCartStore()
 
+if (bookStore.has(id.value)) {
+    book.value = bookStore.get(id.value)
+} else {
+    axiosConfig().get(`/book/${id.value}`)
+        .then(result => {
+            bookStore.setOne(result.data)
+            book.value = result.data
+        })
+        .catch(console.log)
+}
 
-axiosConfig().get(`/book/${id.value}`)
-.then(result => {
-    console.log(result.data)
-    book.value = result.data
-})
-.catch(console.log)
+function addToBag() {
+    if (!accountStore.id) {
+        alert("Đăng nhập trước khi thực hiện thao tác này!")
+        return
+    }
+
+    const data = {
+        customerId: accountStore.id,
+        bookId: id.value,
+        value: 1
+    }
+
+    axiosConfig().patch('/cart-item/increase', data)
+    .then(result => {
+        if (result.data) {
+            const key = cartStore.getKey(data)
+            const cart = cartStore.getByCartKey(key)
+
+            if (cart) {
+                cart.quantity += data.value;
+                cartStore.setOne(cart)
+            } else {
+                data.quantity = data.value
+                delete data.value
+                cartStore.setOne(data)
+            }
+        } else {
+            alert("Có lỗi xảy ra, vui lòng thử lại sau....")
+        }
+    })
+    .catch(error => {
+        console.log(error)
+        alert("Có lỗi xảy ra, vui lòng thử lại sau....")
+    })
+}
 </script>

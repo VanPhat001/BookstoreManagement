@@ -33,8 +33,9 @@
                                         <div class="mt-8">
                                             <div class="flow-root">
                                                 <ul role="list" class="-my-6 divide-y divide-gray-200">
-                                                    <li @click="redirectToBookView(item.bookId)" v-for="item in cartItems"
-                                                        :key="item.id" class="flex py-6 cursor-pointer">
+                                                    <li @click="redirectToBookView(item.bookId)"
+                                                        v-for="item in cartItemArrayRender" :key="item.id"
+                                                        class="flex py-6 cursor-pointer">
                                                         <div
                                                             class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                                                             <img :src="getBookCover(item.bookId)" alt="book image"
@@ -58,9 +59,9 @@
                                                                 <p class="text-gray-500">Quantity {{ item.quantity }}</p>
 
                                                                 <div class="flex">
-                                                                    <div
-                                                                        @click.stop="removeShoppingCartItem(item.bookId)"
-                                                                        class="font-medium text-indigo-600 hover:text-indigo-500">Remove</div>
+                                                                    <div @click.stop="removeShoppingCartItem(item.bookId)"
+                                                                        class="font-medium text-indigo-600 hover:text-indigo-500">
+                                                                        Remove</div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -104,12 +105,14 @@
 </template>
     
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, isProxy, ref, watch } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 import axiosConfig from '@/axiosConfig'
-import { useAccountSore } from '@/stores/account';
+import { useAccountSore } from '@/stores/account'
+import { useCartStore } from '@/stores/carts'
 import router from '@/router';
+import { useBookStore } from '@/stores/books'
 
 const emits = defineEmits(['onClose', 'onOpen'])
 const props = defineProps({
@@ -120,12 +123,22 @@ const props = defineProps({
 })
 
 const accountStore = useAccountSore()
-// const products = ref([])
-const cartItems = ref([])
-const bookMap = ref(new Map())
+const cartStore = useCartStore()
+const bookStore = useBookStore()
+const cartMap = computed(() => cartStore.cartMap)
+const bookMap = computed(() => bookStore.bookMap)
 const open = ref(props.open)
 
-const subTotal = computed(() => cartItems.value.reduce((s, item) => item.quantity * getBookPrice(item.bookId) + s, 0).toFixed(2))
+const cartItemArrayRender = computed(() => [...cartMap.value.values()])
+
+const subTotal = computed(() => {
+    let s = 0
+    cartMap.value.forEach(cart => {
+        const book = bookMap.value.get(cart.bookId)
+        s += cart.quantity * book.price
+    })
+    return s.toFixed(2)
+})
 
 
 watch(() => props.open, (newVal, oldVal) => {
@@ -142,20 +155,12 @@ watch(() => open.value, (newVal, oldVal) => {
     }
 })
 
-axiosConfig().get(`/shopping-cart/customer/${accountStore.id}`)
-    .then(result => {
-        const map = new Map()
-        result.data.books.forEach(book => {
-            map.set(book.id, book)
-        })
-
-        bookMap.value = map
-        cartItems.value = result.data.cartItems
-
-        console.log({ bookMap: bookMap.value })
-        console.log({ cartItems: cartItems.value })
-    })
-    .catch(console.log)
+// axiosConfig().get(`/shopping-cart/customer/${accountStore.id}`)
+//     .then(result => {
+//         bookStore.addMany(result.data.books)
+//         cartStore.setMany(result.data.cartItems)
+//     })
+//     .catch(console.log)
 
 function getBookCover(bookId) {
     return bookMap.value.get(bookId).bookCover
@@ -185,17 +190,17 @@ function redirectToOrderSummaryView() {
 
 function removeShoppingCartItem(bookId) {
     const cusomterId = accountStore.id
-    // console.log({ bookId, cusomterId })
 
     axiosConfig().delete(`/cart-item/${cusomterId}/${bookId}`)
-    .then(result => {
-        console.log("cart item has deleted")
-        if (result.data) {
-            cartItems.value = cartItems.value.filter(item => item.bookId != bookId)
-        } else {
+        .then(result => {
+            console.log("cart item has deleted")
+            if (result.data) {
+                const key = cartStore.makeKey(bookId, cusomterId)
+                cartStore.deleteOne(key)
+            } else {
 
-        }
-    })
-    .catch(console.log)
+            }
+        })
+        .catch(console.log)
 }
 </script>
