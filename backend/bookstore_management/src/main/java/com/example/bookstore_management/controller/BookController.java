@@ -8,6 +8,8 @@ import com.example.bookstore_management.service.BookService;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +19,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 @RestController
@@ -32,7 +37,7 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getMethodName(@PathVariable Integer id) {
+    public ResponseEntity<Book> getBookById(@PathVariable Integer id) {
         if (id == null) {
             return ResponseEntity.badRequest().body(null);
         }
@@ -46,8 +51,28 @@ public class BookController {
         }
     }
 
+    @PostMapping("/list")
+    public ResponseEntity<List<Book>> getBooksByIds(@RequestBody Map<String, Integer[]> body) {
+        try {
+            Integer[] bookIdArray =  body.get("bookIdArray");
+            List<Book> result = new ArrayList<Book>();
+
+            for (Integer bookId : bookIdArray) {
+                Book book = bookService.findById(bookId);
+                result.add(book);
+            }
+
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return ResponseEntity.badRequest().body(null);
+    }
+    
+
     @GetMapping("/find/regex/{text}")
-    public ResponseEntity<?> getMethodName(@PathVariable String text) {
+    public ResponseEntity<?> findBookByNameUsingRegularExpression(@PathVariable String text) {
         try {
             return ResponseEntity.ok(bookService.findByRegex(text));
         } catch (Exception e) {

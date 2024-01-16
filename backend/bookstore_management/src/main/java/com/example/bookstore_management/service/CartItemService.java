@@ -18,4 +18,21 @@ public class CartItemService {
     public void deleteCartItemByCustomerIdAndBookId(Integer customerId, Integer bookId) {
         cartItemRepository.deleteByCustomerIdAndBookId(customerId, bookId);
     }
+
+    @Transactional
+    public void increaseCartItemQuantiy(Integer bookId, Integer customerId, Integer value) {
+        CartItem cartItem = cartItemRepository.findByBookIdAndCustomerId(bookId, customerId);
+
+        if (cartItem == null) {
+            cartItemRepository.save(new CartItem(customerId, bookId, value));
+            return;
+        }
+
+        Integer newQuantity = cartItem.getQuantity() + value;
+        if (newQuantity <= 0) {
+            cartItemRepository.deleteByCustomerIdAndBookId(customerId, bookId);
+        } else {
+            cartItemRepository.updateCartItemQuantity(bookId, customerId, newQuantity);
+        }
+    }
 }
