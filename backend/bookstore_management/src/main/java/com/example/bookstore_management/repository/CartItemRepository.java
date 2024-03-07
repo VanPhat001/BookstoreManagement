@@ -10,8 +10,6 @@ import org.springframework.data.repository.query.Param;
 import com.example.bookstore_management.compositeKey.CartItemKey;
 import com.example.bookstore_management.model.CartItem;
 
-import jakarta.transaction.Transactional;
-
 public interface CartItemRepository extends JpaRepository<CartItem, CartItemKey> {
 
     List<CartItem> findByCustomerId(Integer id);

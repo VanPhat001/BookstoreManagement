@@ -1,17 +1,12 @@
 package com.example.bookstore_management.controller;
 
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.bookstore_management.model.CartItem;
-import com.example.bookstore_management.repository.CartItemRepository;
 import com.example.bookstore_management.service.CartItemService;
-
-import jakarta.websocket.server.PathParam;
-
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,6 +14,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PostMapping;
+
 
 @RestController
 @RequestMapping("/cart-item")
@@ -60,4 +57,20 @@ public class CartItemController {
 
         return ResponseEntity.badRequest().body(false);
     }
+
+    @PostMapping("/update-items")
+    public ResponseEntity<Boolean> updateCartItems(@RequestBody CartItem[] body) {
+        // for (CartItem cartItem : body) {
+        //     System.out.println(cartItem);
+        // }
+
+        try {
+            cartItemService.updateCartItems(body);
+            return ResponseEntity.ok(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.badRequest().body(false);
+    }
+    
 }

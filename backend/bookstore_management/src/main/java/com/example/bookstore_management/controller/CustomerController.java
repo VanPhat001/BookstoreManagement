@@ -26,7 +26,7 @@ public class CustomerController {
     CustomerService customerService;
 
     @GetMapping
-    public ResponseEntity<List<Customer>> getMethodName() {
+    public ResponseEntity<List<Customer>> getAllCustomers() {
         try {
             return ResponseEntity.ok(customerService.findAll());
         } catch (Exception e) {
@@ -36,9 +36,10 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Customer> getMethodName(@PathVariable Integer id) {
+    public ResponseEntity<Customer> getCustomerById(@PathVariable Integer id) {
         try {
             var data = customerService.findById(id);
+            data.setPassword(null);
             return ResponseEntity.ok(data);
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,13 +48,24 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<Customer> postMethodName(@RequestBody Customer customer) {
+    public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
         if (customer != null) {
             Customer data = customerService.create(customer);
             return ResponseEntity.ok(data);
         }
         return ResponseEntity.badRequest().body(null);
     }
+
+    @PostMapping("/update")
+    public ResponseEntity<Boolean> updateProfile(@RequestBody Customer customer) {
+        if (customer != null)
+        {
+            Boolean success = customerService.updateCustomer(customer);
+            return ResponseEntity.ok(success);
+        }
+        return ResponseEntity.badRequest().body(null);
+    }
+    
 
     @PostMapping("/find")
     public ResponseEntity<Customer> findCustomer(@RequestBody Map<String, String> body) {

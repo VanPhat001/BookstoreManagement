@@ -13,7 +13,6 @@ public class CartItemService {
     @Autowired
     CartItemRepository cartItemRepository;
 
-
     @Transactional
     public void deleteCartItemByCustomerIdAndBookId(Integer customerId, Integer bookId) {
         cartItemRepository.deleteByCustomerIdAndBookId(customerId, bookId);
@@ -33,6 +32,26 @@ public class CartItemService {
             cartItemRepository.deleteByCustomerIdAndBookId(customerId, bookId);
         } else {
             cartItemRepository.updateCartItemQuantity(bookId, customerId, newQuantity);
+        }
+    }
+
+    @Transactional
+    public void updateCartItems(CartItem[] body) {
+        for (CartItem cartItem : body) {
+            try {
+                if (cartItem.getQuantity() == 0) {
+                    cartItemRepository.deleteByCustomerIdAndBookId(
+                        cartItem.getCustomerId(), 
+                        cartItem.getBookId());
+                } else {
+                    cartItemRepository.updateCartItemQuantity(
+                            cartItem.getBookId(),
+                            cartItem.getCustomerId(),
+                            cartItem.getQuantity());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }
