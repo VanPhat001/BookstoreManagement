@@ -30,6 +30,11 @@ const router = createRouter({
       component: () => import('../views/OrderSummaryView.vue')
     },
     {
+      path: '/edit',
+      name: 'edit',
+      component: () => import('../views/EditProfile.vue')
+    },
+    {
       path: '/book/:id',
       name: 'book',
       component: () => import('../views/BookView.vue')

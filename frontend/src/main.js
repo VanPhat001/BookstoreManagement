@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import VueNumberInput from '@chenfengyuan/vue-number-input'
 
 import '@/assets/base.css'
 
@@ -8,6 +9,7 @@ import router from './router'
 
 const app = createApp(App)
 
+app.component(VueNumberInput.name, VueNumberInput);
 app.use(createPinia())
 app.use(router)
 

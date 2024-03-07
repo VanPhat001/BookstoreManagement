@@ -19,21 +19,24 @@
                     </p>
                     <template v-if="cartsRender.length == 0">
                         <p class="mt-2">
-                            No items. <RouterLink :to="{ name: 'home' }" class="text-blue-500 hover:text-blue-600">Back to home!</RouterLink>
+                            No items. <RouterLink :to="{ name: 'home' }" class="text-blue-500 hover:text-blue-600">Back
+                                to home!</RouterLink>
                         </p>
                     </template>
 
                     <template v-for="(cart, index) in cartsRender" :key="index">
-                        <RouterLink :to="{ name: 'book', params: { id: cart.bookId } }"
+                        <div :to="{ name: 'book', params: { id: cart.bookId } }"
                             class="mt-4 md:mt-6 flex flex-col md:flex-row justify-start items-start md:items-center md:space-x-6 xl:space-x-8 w-full">
-                            <div class="pb-4 md:pb-8 w-full md:w-40">
+                            <RouterLink :to="{ name: 'book', params: { id: cart.bookId } }"
+                                class="pb-4 md:pb-8 w-full md:w-40">
                                 <img class="w-full hidden md:block" :src="getBookCover(cart.bookId)" alt="dress" />
                                 <img class="w-full md:hidden" :src="getBookCover(cart.bookId)" alt="dress" />
-                            </div>
+                            </RouterLink>
                             <div
                                 class="border-b border-gray-200 md:flex-row flex-col flex justify-between items-start w-full pb-8 space-y-4 md:space-y-0">
                                 <div class="w-full flex flex-col justify-start items-start space-y-8">
-                                    <h3 class="text-xl dark:text-white xl:text-2xl font-semibold leading-6 text-gray-800">
+                                    <h3
+                                        class="text-xl dark:text-white xl:text-2xl font-semibold leading-6 text-gray-800">
                                         {{ getBookName(cart.bookId) }}</h3>
                                     <div class="flex justify-start items-start flex-col space-y-2">
                                         <p class="text-sm dark:text-white leading-none text-gray-800"><span
@@ -47,19 +50,26 @@
                                     </div>
                                 </div>
                                 <div class="flex justify-between space-x-8 items-start w-full">
-                                    <p class="text-base dark:text-white xl:text-lg leading-6">$ {{ getBookPrice(cart.bookId)
-                                    }}
+                                    <p class="text-base dark:text-white xl:text-lg leading-6">$ {{
+                        getBookPrice(cart.bookId)
+                    }}
                                         <!-- <span class="text-red-300 line-through">
                                             $45.00</span> -->
                                     </p>
-                                    <p class="text-base dark:text-white xl:text-lg leading-6 text-gray-800">{{ cart.quantity
-                                    }}</p>
-                                    <p class="text-base dark:text-white xl:text-lg font-semibold leading-6 text-gray-800">
-                                        $ {{ getBookPrice(cart.bookId) * cart.quantity }}
+                                    <!-- <p class="text-base dark:text-white xl:text-lg leading-6 text-gray-800">{{ cart.quantity
+                                    }}</p> -->
+                                    <vue-number-input class="w-28" size="small" controls inline rounded center :min="1"
+                                        v-model="cart.quantity"></vue-number-input>
+                                    <p
+                                        class="text-base dark:text-white xl:text-lg font-semibold leading-6 text-gray-800">
+                                        $ {{ (getBookPrice(cart.bookId) * cart.quantity).toFixed(2) }}
                                     </p>
+
+                                    <button @click="onRemoveCartItem(cart.bookId)"
+                                        class="text-base dark:text-red-500 xl:text-lg font-semibold leading-6 text-blue-600">Xoá</button>
                                 </div>
                             </div>
-                        </RouterLink>
+                        </div>
                     </template>
                     <!-- <div
                         class="mt-6 md:mt-0 flex justify-start flex-col md:flex-row items-start md:items-center space-y-4 md:space-x-6 xl:space-x-8 w-full">
@@ -119,7 +129,8 @@
                         </div>
                         <div class="flex justify-between items-center w-full">
                             <p class="text-base dark:text-white font-semibold leading-4 text-gray-800">Total</p>
-                            <p class="text-base dark:text-gray-300 font-semibold leading-4 text-gray-600">$ {{ subTotal }}
+                            <p class="text-base dark:text-gray-300 font-semibold leading-4 text-gray-600">$ {{ subTotal
+                                }}
                             </p>
                         </div>
                     </div>
@@ -147,6 +158,10 @@
                         </div>
                     </div>
                 </div>
+
+                <button
+                    class="min-[0px]:hidden min-[1439px]:flex w-full justify-center text-xl bg-blue-500 hover:bg-blue-400 text-white py-3"
+                    @click="onNextStep">Next Step</button>
             </div>
 
             <!-- customer -->
@@ -158,17 +173,18 @@
                     <div class="flex flex-col justify-start items-start flex-shrink-0">
                         <div
                             class="flex justify-center w-full md:justify-start items-center space-x-4 py-8 border-b border-gray-200">
-                            <img :src="accountSore.avatar" width="50" alt="avatar" />
+                            <img :src="accountStore.avatar" width="50" alt="avatar" />
                             <div class="flex justify-start items-start flex-col space-y-2">
                                 <p class="text-base dark:text-white font-semibold leading-4 text-left text-gray-800">{{
-                                    accountSore.name }}</p>
+                        accountStore.name }}</p>
                                 <!-- <p class="text-sm dark:text-gray-300 leading-5 text-gray-600">10 Previous Orders</p> -->
                             </div>
                         </div>
 
                         <div
                             class="flex justify-center text-gray-800 dark:text-white md:justify-start items-center space-x-4 py-4 border-b border-gray-200 w-full">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M19 5H5C3.89543 5 3 5.89543 3 7V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5Z"
                                     stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
@@ -176,7 +192,7 @@
                                     stroke-linejoin="round" />
                             </svg>
 
-                            <p class="cursor-pointer text-sm leading-5 ">{{ accountSore.email }}</p>
+                            <p class="cursor-pointer text-sm leading-5 ">{{ accountStore.email }}</p>
                         </div>
                     </div>
                     <div class="flex justify-between xl:h-full items-stretch w-full flex-col mt-6 md:mt-0">
@@ -202,7 +218,7 @@
                                     Billing Address</p>
                                 <p
                                     class="w-48 lg:w-full dark:text-gray-300 xl:w-48 text-center md:text-left text-sm leading-5 text-gray-600">
-                                    {{ accountSore.address }}</p>
+                                    {{ accountStore.address }}</p>
                             </div>
                         </div>
                         <div class="flex w-full justify-center items-center md:justify-start md:items-start">
@@ -213,30 +229,50 @@
                     </div>
                 </div>
             </div>
+
+            <button
+                class="flex min-[1440px]:hidden w-full justify-center text-xl bg-blue-500 hover:bg-blue-400 text-white py-3"
+                @click="onNextStep">Next Step</button>
         </div>
+
     </div>
 </template>
 
 <script setup>
+import Debounce from '@/Debounce';
 import { useAccountSore } from '@/stores/account';
 import { useBookStore } from '@/stores/books';
 import { useCartStore } from '@/stores/carts';
-import { computed } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
+import axiosConfig from '@/axiosConfig'
 
-const accountSore = useAccountSore()
+const accountStore = useAccountSore()
 const bookStore = useBookStore()
 const cartStore = useCartStore()
 
 const cartsRender = computed(() => [...cartStore.cartMap.values()])
 const subTotal = computed(() => {
     let s = 0
-    cartStore.cartMap.forEach(cart => {
+    cartsRender.value.forEach(cart => {
         const book = bookStore.bookMap.get(cart.bookId)
         s += cart.quantity * book.price
     })
     return s.toFixed(2)
 })
 
+const debounce = new Debounce(updateCartItems, 1000)
+
+let isFirstVisit = true
+watch(
+    () => cartsRender.value,
+    () => {
+        if (!isFirstVisit) {
+            debounce.reStart()
+        }
+        isFirstVisit = false
+    },
+    { deep: true }
+)
 
 function getBookCover(bookId) {
     return bookStore.get(bookId).bookCover
@@ -248,6 +284,44 @@ function getBookName(bookId) {
 
 function getBookPrice(bookId) {
     return bookStore.get(bookId).price
+}
+
+function onRemoveCartItem(bookId) {
+    const answer = confirm('Do you want to remove ' + getBookName(bookId))
+
+    const customerId = accountStore.id
+    if (answer) {
+        axiosConfig().delete(`/cart-item/${customerId}/${bookId}`)
+            .then(result => {
+                console.log("cart item has deleted")
+                if (result.data) {
+                    const key = cartStore.makeKey(bookId, customerId)
+                    cartStore.deleteOne(key)
+                } else {
+
+                }
+            })
+            .catch(console.log)
+    }
+}
+
+function updateCartItems() {
+    // update all cart.quantity
+    const arr = cartsRender.value.map(cart => ({
+        bookId: cart.bookId,
+        customerId: cart.customerId,
+        quantity: cart.quantity
+    }))
+
+    axiosConfig().post('/cart-item/update-items', arr)
+        .then(result => {
+            console.log(result.data);
+        })
+        .catch(console.log)
+}
+
+function onNextStep() {
+    alert("go to payment page")
 }
 
 </script>

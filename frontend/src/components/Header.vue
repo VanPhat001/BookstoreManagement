@@ -1,10 +1,11 @@
 <template>
     <header class="bg-white border-b border-b-gray-600/20" v-if="showHeader">
         <nav class="mx-auto flex max-w-7xl items-center justify-between p-2 lg:px-8" aria-label="Global">
-            <div class="flex lg:flex-1">
+            <div class="flex lg:flex-1 justify-center">
                 <RouterLink :to="{ name: 'home' }" class="-m-1.5 p-1.5">
                     <span class="sr-only">Your Company</span>
-                    <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="" />
+                    <!-- <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="" /> -->
+                    <img class="h-12 w-auto" src="/logo2.jpg" alt="" />
                 </RouterLink>
             </div>
             <div class="flex lg:hidden">
@@ -113,9 +114,9 @@
                                 class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                 <div class="py-1">
                                     <MenuItem v-slot="{ active }">
-                                    <button
+                                    <router-link :to="{ name: 'edit' }" 
                                         :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block w-full text-left px-4 py-2 text-sm']">Account
-                                        settings</button>
+                                        settings</router-link>
                                     </MenuItem>
                                     <MenuItem v-slot="{ active }">
                                     <button
